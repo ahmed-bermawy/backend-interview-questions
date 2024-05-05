@@ -176,9 +176,122 @@ Route::middleware('throttle:60,1')->get('/user', function () {
 
 </details>
 
+* ## What is Event and Listener in Laravel?
+
+Events are a way to notify other parts of the application that a certain action has occurred.
+
+Listeners are classes that handle the events and perform the necessary actions.
+
+example in laravel
+
+```php
+
+
+
 * ## What is the difference between `auth()->user()` and `Auth::user()` in Laravel?
 
 `auth()->user()` is a helper function that returns the currently authenticated user.
 
 `Auth::user()` is a facade that provides access to the authentication services.
 
+* ## How to implement distributed locking in Laravel?
+
+Distributed locking is a way to prevent multiple processes from accessing a shared resource at the same time.
+
+In Laravel, you can use the `lockForUpdate()` method to implement distributed locking.
+
+```php
+DB::table('posts')->where('id', 1)->lockForUpdate()->get();
+```
+
+* ## How to implement builder or manager design pattern in Laravel?
+
+<details>
+
+<summary>Example</summary>
+
+```php
+
+interface ParserInterface
+{
+    public function parse(string $path): array;
+}
+
+class ParserManager extends Manager
+{
+
+    public function getDefaultDriver(): string
+    {
+        return 'json';
+    }
+
+    public function createJsonDriver(): JsonParser
+    {
+        return new JsonParser();
+    }
+
+    public function createCsvDriver(): CsvParser
+    {
+        return new CsvParser();
+    }
+}
+
+class ParserServiceProvider extends ServiceProvider
+{
+    public function register(): void
+    {
+        $this->app->singleton(ParserManager::class, function ($app) {
+            return new ParserManager($app);
+        });
+
+        $this->app->alias(ParserManager::class, 'parser');
+    }
+}
+
+class Parser extends Facade
+{
+    protected static function getFacadeAccessor(): string
+    {
+        return 'parser';
+    }
+}
+
+
+class CsvParser implements ParserInterface
+{
+
+    public function parse(string $path): array
+    {
+        $file = fopen($path, 'r');
+        $rows = [];
+
+        while (($row = fgetcsv($file)) !== false) {
+            $rows[] = $row;
+        }
+
+        fclose($file);
+
+        return $rows;
+    }
+}
+
+class JsonParser implements ParserInterface
+{
+
+    public function parse(string $path): array
+    {
+        $json = file_get_contents($path);
+        return json_decode($json, true);
+    }
+}
+
+$jsonFile = storage_path('app/public/data.json');
+$data = Parser::parse($jsonFile); // because json is our default driver
+
+// to user csv driver
+$csvPath = storage_path('app/public/data.csv');
+$csvData = Parser::driver('csv')->parse($csvPath);
+
+```
+
+</details>

@@ -148,9 +148,72 @@ Overloading is when a single method behaves differently based on the number or t
 * ## Does PHP support Overloading?
 No, PHP does not support method overloading.
 
+if you try to define two methods with the same name in a class. you will have a fatal error.
+
+<details>
+
+<summary>Not Supported Overloading</summary>
+
+```php
+
+class SampleClass
+{
+	function add(int $a, int $b): int
+	{
+		return $a + $b;
+	}
+
+	function add(int $a, int $b, int $c): int
+	{
+		return $a + $b + $c > 10 ?? 10;
+	}
+}
+
+// Fatal error: Cannot redeclare SampleClass::add()
+
+```
+</details>
+
 you can use `func_get_args()` to get all arguments passed to a function.
 
 You can only overload methods using the magic method __call
+
+<details>
+
+<summary>Example of using the magic method __call</summary>
+
+```php
+class SampleClass
+{
+    function __call($name, $arguments)
+    {
+        if ($name == 'add') {
+            if (count($arguments) == 2) {
+                return $this->addTwo(...$arguments);
+            } elseif (count($arguments) == 3) {
+                return $this->addThree(...$arguments);
+            }
+        }
+    }
+
+    function addTwo(int $a, int $b): int
+    {
+        return $a + $b;
+    }
+
+    function addThree(int $a, int $b, int $c): int
+    {
+        return $a + $b + $c > 10 ?? 10;
+    }
+}
+
+$sample = new SampleClass();
+
+echo $sample->add(1, 2); // Output: 3
+echo $sample->add(1, 2, 3); // Output: 6
+```
+
+</details>
 
 * ##  What is PHP Trait?
 A Trait is simply a group of methods that you want to include within another class.
@@ -258,5 +321,127 @@ try {
 
 </details>
 
+* ## What is arrow function in PHP?
+Arrow functions are a more concise way of writing anonymous functions in PHP.
+
+<details>
+
+<summary>Example</summary>
+
+```php
+$numbers = [1, 2, 3, 4, 5];
+
+// Using traditional anonymous function
+$filtered = array_filter($numbers, function ($num) {
+    return $num % 2 === 0;
+});
+
+// Using arrow function
+$filtered = array_filter($numbers, fn($num) => $num % 2 === 0);
+```
+
+</details>
+
+* ## Give me example of match expression in PHP?
+
+Match expression is a more concise and readable way to compare a value against many different values in PHP.
+
+<details>
+
+<summary>Example</summary>
+
+```php
+$day = 'Monday';
+
+// Using traditional switch statement
+switch ($day) {
+    case 'Monday':
+        echo 'Start of the week';
+        break;
+    case 'Friday':
+        echo 'End of the week';
+        break;
+    default:
+        echo 'Middle of the week';
+}
+
+// Using match expression
+echo match ($day) {
+    'Monday' => 'Start of the week',
+    'Friday' => 'End of the week',
+    default => 'Middle of the week',
+};
+```
+
+</details>
+
+* ## Is match faster than switch in PHP?
+
+Yes, match is faster than switch in PHP
+because match is a more optimized and concise way to compare a value against many different values.
+
+* ## can we define properties in interfaces in PHP?
+
+Yes, you can define properties in interfaces in PHP.
 
 
+<details>
+
+<summary>Example</summary>
+
+```php
+interface SampleInterface
+{
+    public const NAME = 'John Doe';
+}
+
+echo SampleInterface::NAME; // Output: John Doe
+```
+
+</details>
+
+* ## How to test static method in PHPUnit mocking?
+
+You can use the `setStaticExpectations` method in PHPUnit to test static methods.
+
+<details>
+
+<summary>Example</summary>
+
+```php
+class SampleClass
+{
+    public static function add(int $a, int $b): int
+    {
+        return $a + $b;
+    }
+}
+
+class SampleTest extends TestCase
+{
+    public function testAdd()
+    {
+        $this->staticExpects(SampleClass::class)
+            ->method('add')
+            ->with(1, 2)
+            ->willReturn(3);
+
+        $result = SampleClass::add(1, 2);
+
+        $this->assertEquals(3, $result);
+    }
+}
+```
+
+</details>
+
+* ## you have a bug on production and you have access to database and logs, how do you debug it?
+
+1. Check the logs for any error messages or exceptions.
+2. Check the database for any incorrect data or missing records.
+3. Use debugging tools like Xdebug to step through the code and identify the issue.
+4. Use print statements to log the values of variables and functions to identify the issue.
+5. Use profiling tools like Blackfire to identify performance bottlenecks.
+6. Use monitoring tools like New Relic to identify any performance issues.
+7. Use version control to identify any recent changes that may have caused the bug.
+8. Use error tracking tools like Sentry to identify and track errors in production.

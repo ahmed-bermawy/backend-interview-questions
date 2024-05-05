@@ -60,7 +60,6 @@ The following TRIGGERS are allowed in MySQL:
     BEFORE DELETE
     AFTER DELETE
 
-
 * ## What is the transaction?
 A transaction is a unit of work that you want to treat as "a whole." It has to either happen in full or not at all.
 
@@ -100,7 +99,7 @@ HAVING total_products > 5;
 ```
 
 
-* ## What is the database transaction log?
+* ## What are the database transaction logs?
 
 A database's transaction log is a file or set of files that record all the changes made to the data in the database. It is an essential component of database management systems (DBMS) that ensures data integrity and provides the ability to recover from failures.
 The transaction log serves several key purposes:
@@ -137,6 +136,19 @@ Example:
 TRUNCATE TABLE table_name;
 ```
 
+* ## Why truncate make the table autoincrement to 1?
+
+This behavior is by design and is intended to ensure
+that the auto-increment column starts from the beginning when new rows are inserted into the table after truncation.
+
+* ## What is the difference between Union and Union All?
+
+`UNION` and `UNION ALL` are used to combine the result sets of two or more SELECT statements.
+
+`UNION` removes duplicate rows from the combined result set, while `UNION ALL` includes all rows, including duplicates.
+
+`UNION` is slower than `UNION ALL` because it has to perform an additional step to remove duplicates.
+
 * ## What about stored procedures?
 
 A stored procedure in MySQL is a prepared SQL code that you can save, reuse, and share with others. Stored procedures allow you to group a set of SQL statements into a single unit and execute them whenever needed, without having to rewrite the code each time. Stored procedures can also accept parameters, making them more flexible and reusable.
@@ -153,6 +165,37 @@ In this example, sp_get_employee is the name of the stored procedure, and it acc
 Once you've created a stored procedure, you can call it like this:
 
 `CALL sp_get_employee(1);`
+
+* ## What about function?
+
+A function in MySQL is a set of SQL statements that can be reused in other SQL statements or stored procedures. Functions can accept parameters, perform calculations or data manipulations, and return a value. Functions are similar to stored procedures, but they are typically used to perform specific calculations or data transformations rather than executing a sequence of SQL statements.
+
+Here's a basic example of how to create a function in MySQL:
+```sql
+CREATE FUNCTION calculate_tax(amount DECIMAL(10,2)) RETURNS DECIMAL(10,2)
+BEGIN
+DECLARE tax DECIMAL(10,2);
+SET tax = amount * 0.1;
+RETURN tax;
+END;
+```
+
+* ## What is the difference between a stored procedure and a function?
+
+Stored procedures and functions are both reusable blocks of SQL code
+that can be called from other SQL statements or applications.
+However, there are some key differences between the two:
+
+**Return Value:** Functions must return a value, while stored procedures do not have to return a value.
+
+**Usage:** Functions are typically used to perform calculations or data transformations and return a single value, while stored procedures are used to execute a sequence of SQL statements and perform more complex operations.
+
+**Transaction Control:** Stored procedures can control transactions using COMMIT and ROLLBACK statements, while functions cannot.
+
+**Error Handling:** Stored procedures can handle errors using the DECLARE HANDLER statement, while functions cannot.
+
+**Scope:** Functions can be called from SQL statements, stored procedures, and other functions, while stored procedures can only be called from SQL statements or other stored procedures.
+
 
 * ## What is the view in the database?
 
@@ -186,4 +229,165 @@ DROP VIEW view_name;
 ```
 
 </details>
+
+* ## How to analysis slow query in MySQL?
+
+MySQL provides several tools for analyzing slow queries and optimizing database performance. Some of the most common tools include:
+
+**EXPLAIN:** The EXPLAIN statement can be used to analyze the execution plan of a query and identify potential performance issues, such as missing indexes or inefficient joins.
+
+you can see all indexes in `possible_keys` column 
+
+```sql
+EXPLAIN SELECT * FROM employees WHERE salary > 50000;
+```
+
+**Partitioning:** Split large tables into smaller. Partitioning can improve query performance by reducing the amount of data that needs to be scanned for each query.
+
+```sql
+
+CREATE TABLE employees (
+    id INT,
+    name VARCHAR(50),
+    salary INT
+)
+PARTITION BY RANGE (salary) (
+    PARTITION p0 VALUES LESS THAN (50000),
+    PARTITION p1 VALUES LESS THAN (100000),
+    PARTITION p2 VALUES LESS THAN (MAXVALUE)
+);
+```
+
+
+**SHOW PROFILE:** The SHOW PROFILE statement can be used to display detailed information about the execution of a query, including the time spent in each stage of the query execution.
+
+```sql
+SET profiling = 1;
+SELECT * FROM employees WHERE salary > 50000;
+SHOW PROFILE;
+```
+
+**MySQL Performance Schema:** The Performance Schema is a feature in MySQL that provides detailed performance metrics about the database server, including information about query execution, resource usage, and locking.
+
+```sql
+SELECT * FROM performance_schema.events_statements_summary_by_digest;
+```
+
+**MySQL Query Analyzer:** The MySQL Query Analyzer is a graphical tool that can be used to analyze slow queries, identify performance bottlenecks, and optimize database performance.
+
+* ## What are the aggregation functions in MySQL?
+
+Aggregation functions in MySQL are functions that operate on a set of values and return a single value as a result.
+
+<details>
+
+<summary>Common aggregation functions in MySQL </summary>
+
+**COUNT:** Returns the number of rows that match a specified condition.
+
+```sql
+SELECT COUNT(*) FROM employees;
+```
+
+**SUM:** Returns the sum of a set of values.
+
+```sql
+SELECT SUM(salary) FROM employees;
+```
+
+**AVG:** Returns the average of a set of values.
+
+```sql
+SELECT AVG(salary) FROM employees;
+```
+
+**MIN:** Returns the minimum value in a set of values.
+
+```sql
+SELECT MIN(salary) FROM employees;
+```
+
+**MAX:** Returns the maximum value in a set of values.
+
+```sql
+SELECT MAX(salary) FROM employees;
+```
+
+</details>
+
+* ## If I want to write-only to a database, what is better engine for that?
+
+If you want too write-only to a database, the best storage engine for that purpose is `MyISAM`.
+
+MyISAM is a non-transactional storage engine optimized for write-heavy workloads.
+It is designed for high-speed inserts and updates
+and is well-suited for applications that require fast write performance
+
+* ## How indexing works in MySQL?
+
+Indexing in MySQL is a way to optimize the performance of queries
+by reducing the number of rows that need to be scanned to retrieve the desired data.
+An index is a data structure that stores the values of one or more columns in a table in a sorted order,
+allowing the database to quickly locate the rows that match a given condition.
+
+* ## Can you add unique index to a column that has duplicate values?
+
+No, you cannot add a unique index to a column that has duplicate values.
+
+A unique index enforces the constraint that all values in the indexed column(s) must be unique,
+
+* ## Can you add a unique index to a column that has data?
+
+Yes, you can add a unique index to a column that already has data.
+
+When you add a unique index to a column that already has data,
+the database will check the existing data to ensure that there are no duplicate values in the column.
+
+If the column contains duplicate values,
+the database will prevent you from adding the unique index until you resolve the duplicates.
+
+* ## What happens to the existing index on the 'first_name' column when I add a composite index for 'first_name' and 'last_name'?
+
+The existing individual indexes on the columns will still exist,
+but they will not be used by the database optimizer when querying both columns together.
+
+The database optimizer will use the new composite index to optimize queries that involve both columns.
+
+* ## should we delete the old index?
+
+It is recommended to do so to avoid confusion and unnecessary overhead.
+
+* ## You have given api, and it has taken extra time around 20 seconds, and you reach to query level how you will speed it up?
+
+There are several ways to speed up a slow API query in MySQL:
+
+**Optimize the Query:** Review the query execution plan using the EXPLAIN statement and identify any potential performance bottlenecks, such as missing indexes or inefficient joins. Make sure that the query is using the appropriate indexes and that the tables are properly optimized.
+
+**Add Indexes:** Add indexes to the columns used in the WHERE, JOIN, and ORDER BY clauses of the query to speed up data retrieval. Be careful not to add too many indexes, as this can slow down write operations.
+
+**Partitioning:** Partition large tables into smaller partitions based on a range of values, such as dates or IDs. Partitioning can improve query performance by reducing the amount of data that needs to be scanned for each query.
+
+**Caching:** Implement caching mechanisms to store the results of frequently executed queries in memory. This can reduce the load on the database server and speed up query execution.
+
+**Query Optimization:** Rewrite the query to use more efficient SQL constructs, such as subqueries, joins, and aggregate functions. Avoid using SELECT * and limit the number of columns returned by the query.
+
+**Database Configuration:** Review the MySQL server configuration settings, such as buffer sizes, cache settings, and thread pool settings. Make sure that the server is properly configured to handle the workload.
+
+**Database Sharding:** If the database is too large to fit on a single server, consider sharding the database into smaller partitions that can be distributed across multiple servers. This can improve query performance by distributing the workload across multiple servers.
+
+* ## What is the issue with this query SELECT * FROM accounts WHERE id IN (SELECT account_id FROM account_data)?
+
+The issue with this query is that it uses a subquery in the WHERE clause, which can be inefficient and slow down query performance.
+
+Instead of using a subquery, you can rewrite the query using a JOIN operation to improve performance.
+
+also using `IN` operator can be slow when the subquery returns a large number of rows.
+
+```sql
+
+SELECT a.*
+FROM accounts a
+JOIN account_data ad ON a.id = ad.account_id;
+
+```
 
