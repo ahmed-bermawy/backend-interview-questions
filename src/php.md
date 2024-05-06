@@ -306,6 +306,10 @@ print($string);
 * ## How to catch any exception in PHP?
 You can use the `throwable` interface to catch any exception in PHP.
 
+* Throwable
+  * Error
+  * Exception
+
 <details>
 
 <summary>Example</summary>

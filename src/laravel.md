@@ -1,3 +1,22 @@
+* ## What is request life cycle in Laravel?
+
+The request life cycle in Laravel is the sequence of events that occur when a request is made to a Laravel application.
+
+1. The request enters the application through the `public/index.php` file.
+2. It loads all vendor files and the `bootstrap/app.php` file.
+3. In `bootstrap/app.php` file determines request that is entering the application and sends it to the appropriate kernel is either the HTTP kernel or the console kernel also prepare Exception Handler. 
+4. Then passed to the `App\Http\Kernel` class, which loads the application's middleware. 
+5. Which will bootstrap the application and load service providers and needed configuration in `config/app.php` file.
+6. Service providers are responsible for bootstrapping all the framework's various components, such as the database, queue, validation, and routing components. 
+7. Once the application has been bootstrapped and all service providers are registered and booted, the request will be handed over to the router for dispatching.
+8. Once the route or controller method returns a response, the response will travel back outward through the route's middleware, giving the application a chance to modify or examine the outgoing response.
+9. Finally, the response is then sent back to the client.
+
+during this life cycle, Laravel will load around 400 files.
+
+<img src="images/laravel_request_life_cycle.png" alt="Request Life Cycle in Laravel" width="1200"/>
+
+
 * ## What is the service container in Laravel?
 
 The Laravel service container is a powerful tool for managing class dependencies and performing dependency injection.
@@ -295,3 +314,61 @@ $csvData = Parser::driver('csv')->parse($csvPath);
 ```
 
 </details>
+
+* ## What are Accessors and Mutators?
+
+**Accessors** are used to format and retrieve attributes from models. 
+
+**Mutators** are used to set or modify attribute values before saving to the database in Laravel models
+
+* ## How to test static method in Laravel?
+
+<details>
+
+<summary>Example</summary>
+
+```php
+
+class Math
+{
+    public static function add(int $a, int $b): int
+    {
+        return $a + $b;
+    }
+}
+
+class MathTest extends TestCase
+{
+    public function testAdd()
+    {
+        $mockMath = Mockery::mock(Math::class); 
+        $mockMath->shouldReceive('add')->andReturn(5);
+    }
+}
+```
+
+</details>
+
+* ## How to handle failed jobs in Laravel?
+
+You can use the `failed()` method on the job class to handle failed jobs in Laravel.
+
+```php
+
+class ProcessPodcast implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    public function handle()
+    {
+        throw new Exception('This job has failed!');
+    }
+
+    public function failed(Exception $exception)
+    {
+        // Send user notification of failure, etc...
+    }
+}
+
+```
+

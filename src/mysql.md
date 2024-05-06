@@ -98,6 +98,20 @@ GROUP BY category_id
 HAVING total_products > 5;
 ```
 
+* ## What is the difference between the WHERE and HAVING clauses?
+
+`WHERE` is used to filter rows before any groupings are made.
+
+while `HAVING` is used to filter rows after groupings are made, also `HAVING` is used with `GROUP BY` clause.
+
+
+* ## How to select only unique values from a column?
+
+You can use the `DISTINCT` keyword to select only unique values from a column.
+
+```sql
+SELECT DISTINCT product_name FROM products;
+```
 
 * ## What are the database transaction logs?
 
