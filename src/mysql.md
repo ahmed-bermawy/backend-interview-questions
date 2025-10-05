@@ -47,6 +47,24 @@ of organizing the columns and tables of a relational database
 to minimize redundancy and dependency
 by dividing large tables into smaller tables and defining relationships between them.
 
+* ## can unique column have default in mysql?
+
+Yes, a unique column can have a default value in MySQL.
+However, the default value must be unique for each row in the table.
+If you try to insert a row with a default value that already exists in the unique column,
+MySQL will return an error.
+
+```
+CREATE TABLE users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  email VARCHAR(255) UNIQUE DEFAULT NULL
+);
+```
+Here, email is UNIQUE and has a default value of NULL. 
+
+This works fine because NULL is not considered equal to another NULL, so multiple rows can have NULL in a unique column.
+
+
 * ## What are the TRIGGERS in MySQL?
 A trigger is a set of actions that are run automatically when a specified change operation
 (SQL INSERT, UPDATE, or DELETE statement) is performed on a specified table
@@ -85,6 +103,16 @@ COMMIT;
 ```
 </details>
 
+* ## What is the deadlock in MySQL? and how to prevent it?
+
+A deadlock in MySQL occurs when two or more transactions are waiting for each other to release locks on resources, resulting in a situation where none of the transactions can proceed.
+
+To prevent deadlocks in MySQL, you can follow these best practices:
+- Access tables and rows in a consistent order across all transactions.
+- Keep transactions short and avoid long-running transactions.
+- Pessimistic locking Use explicit locking (e.g., SELECT ... FOR UPDATE) to control the order of resource acquisition, use lockForUpdate in Laravel
+- Optimistic locking Use versioning or timestamps to detect and handle conflicts without locking resources.
+ 
 * ## How to represent boolean values in MySQL?
 In MySQL, boolean values are represented using a `BOOLEAN` or `BOOL` data type, which are aliases for `TINYINT(1)`.
 
@@ -405,3 +433,74 @@ JOIN account_data ad ON a.id = ad.account_id;
 
 ```
 
+* ### Imagine You have a table called projects that stores information about project timelines with the following columns:
+```
+id
+name
+start_date
+end_date
+```
+Write one SQL query that returns a summary in a single row with the following columns:
+
+* total: total number of projects
+* upcoming: projects that haven’t started yet (start_date > NOW())
+* in_progress: projects currently running (start_date <= NOW() AND end_date >= NOW())
+* finished: projects that have already ended (end_date < NOW())
+
+```sql
+SELECT
+  COUNT(*) AS total,
+  COUNT(CASE WHEN start_date > NOW() THEN 1 END) AS upcoming,
+  COUNT(CASE WHEN start_date <= NOW() AND end_date >= NOW() THEN 1 END) AS in_progress,
+  COUNT(CASE WHEN end_date < NOW() THEN 1 END) AS finished
+FROM projects;
+```
+
+* ### You have a table called payments with the following columns:
+```
+id
+user_id
+payment_date
+amount
+```
+
+Write a SQL query to fetch the latest 2 payments for each user, based on payment_date in descending order.
+
+Example Data
+
+| id | user_id | payment_date | amount |
+| -- | ------- | ------------ | ------ |
+| 1  | 201     | 2025-09-20   | 100    |
+| 2  | 201     | 2025-09-25   | 150    |
+| 3  | 201     | 2025-09-30   | 200    |
+| 4  | 202     | 2025-09-22   | 300    |
+| 5  | 202     | 2025-09-28   | 250    |
+| 6  | 202     | 2025-09-10   | 100    |
+
+✅ Expected Output
+
+| id | user_id | payment_date | amount |
+| -- | ------- | ------------ | ------ |
+| 3  | 201     | 2025-09-30   | 200    |
+| 2  | 201     | 2025-09-25   | 150    |
+| 5  | 202     | 2025-09-28   | 250    |
+| 4  | 202     | 2025-09-22   | 300    |
+
+```sql
+SELECT id, user_id, payment_date, amount
+FROM (
+         SELECT
+             id,
+             user_id,
+             payment_date,
+             amount,
+             ROW_NUMBER() OVER (
+            PARTITION BY user_id 
+            ORDER BY payment_date DESC
+        ) AS rn
+         FROM payments
+     ) AS ranked
+WHERE rn <= 2
+ORDER BY user_id, payment_date DESC;
+
+```

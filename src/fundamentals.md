@@ -83,8 +83,10 @@ SOLID is an acronym for five design principles intended to make software designs
 - **Single Responsibility Principle (SRP):** A class should have one, and only one, reason to change.
 - **Open/Closed Principle (OCP):** You should be able to extend a class's behavior without modifying it.
 - **Liskov Substitution Principle (LSP):** Objects in a program should be replaceable with instances of their subtypes without altering the correctness of that program.
+Another explanation is: parent class can be replaced with child class without breaking the application.
 - **Interface Segregation Principle (ISP):** A client should never be forced to implement an interface that it doesn't use or clients shouldn't be forced to depend on methods they do not use.
-- **Dependency Inversion Principle (DIP):** High-level modules should not depend on low-level modules. Both should depend on abstractions. Abstractions should not depend on details. Details should depend on abstractions.
+- **Dependency Inversion Principle (DIP):** High-level modules should not depend on low-level modules. Both should depend on abstractions. Abstractions should not depend on details. Details should depend on abstractions. 
+Another explanation is: Depend on abstraction, not on concrete.
 
 * ## What is DRY?
 **Don't Repeat Yourself (DRY):** is a principle of software development aimed at reducing repetition of software patterns, to avoid redundancy.
@@ -393,6 +395,17 @@ providing a clean and consistent interface for accessing data using dependency i
 The Repository pattern provides a way to centralize data access logic and abstract the underlying data store,
 making it easier to test and maintain the application.
 
+additional benefits
+
+**Flexibility**: You can easily change the data source (for example, switch from a database to an external API) without affecting the rest of the application.
+
+**Reusability**: Repositories allow you to reuse logic in multiple parts of your app, reducing code duplication.
+
+**Testability**: It’s easier to test, as you can mock or replace the repository during testing.
+
+**Organization & Clarity**: Repositories keep your code clean and structured, making it easier to understand and maintain.
+
+
 <details>
 
 <summary>Example</summary>
@@ -602,6 +615,30 @@ Deciding whether to convert a particular domain problem into microservices invol
 **Cost:**
 
 - Increase infrastructure and operational costs due to the need for additional services and infrastructure.
+
+* ## Facade Design Pattern:
+
+The Facade design pattern is a structural pattern that provides a simplified interface to a complex subsystem.
+
+pros:
+* Simplifies usage of complex systems.
+* Reduces dependencies between client code and subsystems.
+* Encapsulates changes — if subsystems change, client code stays the same.
+
+cons:
+* Hides functionality — advanced users may lose flexibility.
+* It Can become a god class if it grows too large.
+* Adds an extra layer, which may slightly affect performance in large systems.
+
+
+* ## What is service oriented architecture (SOA)?
+Service-Oriented Architecture (SOA) is a design pattern
+that structures an application as a collection of loosely coupled services.
+Each service represents a specific business function and communicates with other services through well-defined interfaces and protocols.
+SOA promotes reusability, scalability, and flexibility by allowing services to be developed, deployed, and maintained independently.
+
+example of SOA: 
+using services classes in project like authentication service, payment service, notification service, etc.
 
 
 
