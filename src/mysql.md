@@ -34,9 +34,9 @@ while `REGEXP` is used to match patterns using regular expressions `^`.
 <summary> Example </summary>
 
 ```sql
-SELECT * FROM users WHERE name LIKE 'A%';  // Matches names starting with 'A'
+SELECT * FROM users WHERE name LIKE 'A%';  -- Matches names starting with 'A'
 
-SELECT * FROM users WHERE name REGEXP '^A';  // Matches names starting with 'A'
+SELECT * FROM users WHERE name REGEXP '^A';  -- Matches names starting with 'A'
 ```
 </details>
 
@@ -47,7 +47,7 @@ of organizing the columns and tables of a relational database
 to minimize redundancy and dependency
 by dividing large tables into smaller tables and defining relationships between them.
 
-* ## can unique column have default in mysql?
+* ## Can unique column have default in mysql?
 
 Yes, a unique column can have a default value in MySQL.
 However, the default value must be unique for each row in the table.
@@ -62,7 +62,21 @@ CREATE TABLE users (
 ```
 Here, email is UNIQUE and has a default value of NULL. 
 
-This works fine because NULL is not considered equal to another NULL, so multiple rows can have NULL in a unique column.
+This works fine because null is not considered equal to another null text, so multiple rows can have null in a unique column.
+
+you can also set a specific default value as long as it is unique.
+```
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NULL DEFAULT 1
+);
+```
+
+in this case , the first row inserted without an email will have the default value of 1,
+
+but the second row inserted without an email will cause a duplicate entry error.
+
+So you can only have one row with the default value of 1 in the email column.
 
 
 * ## What are the TRIGGERS in MySQL?
